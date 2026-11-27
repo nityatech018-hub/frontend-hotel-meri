@@ -20,7 +20,7 @@ const NAV = [
     exact: true,
   },
   {
-    to: "/account/book",
+    to: "/rooms",
     label: "Book a Room",
     icon: BedDouble,
   },

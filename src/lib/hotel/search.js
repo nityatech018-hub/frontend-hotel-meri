@@ -1,6 +1,14 @@
 import { addDays, todayISO } from "./pricing.js";
 
-const CATS = ["deluxe", "premium", "executive", "family", "suite"];
+const CATS = [
+  "ac-family-double",
+  "ac-family-triple",
+  "ac-premium-round",
+  "non-ac-double",
+  "ac-family",
+  "ac-premium",
+  "non-ac",
+];
 const isDate = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
 const num = (v) => {
   const n = Number(v);

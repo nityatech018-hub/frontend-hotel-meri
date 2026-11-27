@@ -24,7 +24,7 @@ export default function AccountOverview() {
     (b) => b.email?.toLowerCase().trim() === (session.email || "").toLowerCase().trim()
   );
   const upcoming = mine
-    .filter((b) => ["Pending", "Confirmed", "Checked-In"].includes(b.status) && b.checkOut >= today)
+    .filter((b) => ["Pending", "Confirmed", "Checked-In"].includes(b.status) && b.checkOut >= todayISO)
     .sort((a, b) => a.checkIn.localeCompare(b.checkIn));
   const stayed = mine.filter((b) => b.status === "Checked-Out");
   const nights = stayed.reduce((n, b) => n + nightsBetween(b.checkIn, b.checkOut), 0);
@@ -39,7 +39,7 @@ export default function AccountOverview() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative overflow-hidden rounded-3xl bg-navy p-7 text-navy-foreground shadow-lift md:p-10 border border-gold/20"
+        className="relative overflow-hidden rounded-3xl bg-[#061830] p-7 text-white shadow-lift md:p-10 border border-gold/30"
       >
         <motion.img
           src={IMG.pool}
@@ -49,15 +49,15 @@ export default function AccountOverview() {
           animate={{ scale: 1 }}
           transition={{ duration: 3 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/85 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#061830] via-[#061830]/85 to-transparent" />
         <div className="relative max-w-xl">
           <p className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-gold uppercase">
             <Sparkles className="size-3.5" /> {greet}
           </p>
-          <h2 className="mt-3 font-display text-3xl md:text-5xl font-normal text-navy-foreground">
+          <h2 className="mt-3 font-display text-3xl md:text-5xl font-normal text-white">
             Welcome, <em className="italic text-gold">{session.name.split(" ")[0]}</em>
           </h2>
-          <p className="mt-3 text-sm text-navy-foreground/75 leading-relaxed">
+          <p className="mt-3 text-sm text-white/80 leading-relaxed">
             {next
               ? next.status === "Checked-In"
                 ? `You're currently staying with us until ${formatDate(next.checkOut)}. Enjoy every moment.`
@@ -66,14 +66,14 @@ export default function AccountOverview() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              to="/account/book"
-              className="rounded-full bg-gold-gradient px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-gold-foreground shadow-gold hover:brightness-110 transition"
+              to="/rooms"
+              className="rounded-full bg-gold-gradient px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-gold-foreground shadow-gold hover:brightness-110 transition"
             >
               Book a Room
             </Link>
             <Link
               to="/account/bookings"
-              className="rounded-full border border-gold/30 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-champagne hover:bg-white/5 transition"
+              className="rounded-full border border-gold/40 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-champagne hover:bg-white/10 transition"
             >
               My Bookings
             </Link>
@@ -152,15 +152,15 @@ export default function AccountOverview() {
                 <Link
                   key={a.to}
                   to={a.to}
-                  className="group flex items-center gap-3 rounded-xl border border-gold/15 bg-navy-deep/40 p-3.5 transition hover:border-gold hover:bg-white/5"
+                  className="group flex items-center gap-3 rounded-xl border border-gold/20 bg-[#FAF7F2] p-3.5 transition hover:border-gold hover:bg-gold/10"
                 >
-                  <span className="grid size-9 place-items-center rounded-lg bg-navy text-gold transition group-hover:rotate-6">
+                  <span className="grid size-9 place-items-center rounded-lg bg-white border border-gold/30 text-gold transition group-hover:rotate-6 shadow-sm">
                     <a.icon className="size-4" />
                   </span>
-                  <span className="flex-1 text-xs font-medium uppercase tracking-wide text-navy-foreground">
+                  <span className="flex-1 text-xs font-semibold uppercase tracking-wide text-[#061830]">
                     {a.label}
                   </span>
-                  <ArrowRight className="size-4 text-navy-foreground/40 transition group-hover:translate-x-1 group-hover:text-gold" />
+                  <ArrowRight className="size-4 text-[#64748b] transition group-hover:translate-x-1 group-hover:text-gold" />
                 </Link>
               ))}
             </div>
@@ -168,17 +168,17 @@ export default function AccountOverview() {
 
           <Panel title="Hotel Timings">
             <dl className="space-y-3 text-xs">
-              <div className="flex justify-between border-b border-gold/10 pb-2">
-                <dt className="text-navy-foreground/60">Check-in</dt>
-                <dd className="font-semibold text-navy-foreground">{state.settings?.checkInTime || "12:00 PM"}</dd>
+              <div className="flex justify-between border-b border-gold/15 pb-2">
+                <dt className="text-[#64748b]">Check-in</dt>
+                <dd className="font-semibold text-[#061830]">{state.settings?.checkInTime || "12:00 PM"}</dd>
               </div>
-              <div className="flex justify-between border-b border-gold/10 pb-2">
-                <dt className="text-navy-foreground/60">Check-out</dt>
-                <dd className="font-semibold text-navy-foreground">{state.settings?.checkOutTime || "11:00 AM"}</dd>
+              <div className="flex justify-between border-b border-gold/15 pb-2">
+                <dt className="text-[#64748b]">Check-out</dt>
+                <dd className="font-semibold text-[#061830]">{state.settings?.checkOutTime || "11:00 AM"}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-navy-foreground/60">Front Desk</dt>
-                <dd className="font-semibold text-navy-foreground">24 Hours</dd>
+                <dt className="text-[#64748b]">Front Desk</dt>
+                <dd className="font-semibold text-[#061830]">24 Hours</dd>
               </div>
             </dl>
           </Panel>

@@ -1,483 +1,468 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import {
   ArrowRight,
-  Shield,
-  Award,
-  Utensils,
-  Waves,
-  Sparkles,
+  BadgeCheck,
+  CalendarCheck,
+  Headphones,
+  ShieldCheck,
   Wifi,
+  UtensilsCrossed,
   Car,
-  Dumbbell,
-  Star,
-  Quote,
+  BellRing,
+  Snowflake,
+  Clock,
   Check,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Expand,
+  BedDouble,
 } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout.jsx";
 import { BookingWidget } from "@/components/site/BookingWidget.jsx";
 import { RoomCard } from "@/components/site/RoomCard.jsx";
+import { Lightbox3D } from "@/components/site/ThreeD.jsx";
 import { useHotelState } from "@/lib/hotel/store.jsx";
 import { IMG } from "@/lib/hotel/images.js";
-import { Aurora, GoldSparks, Marquee, SplitText, useTilt } from "@/components/site/Motion.jsx";
-import { Reveal, Counter, SectionTitle } from "@/components/site/Reveal.jsx";
-import { FlipCard, FlipHint, StoryBook3D } from "@/components/site/ThreeD.jsx";
-import { useIntroDone } from "@/components/site/introState.js";
+
+const EASE = [0.22, 1, 0.36, 1];
+
+const HERO_HIGHLIGHTS = [
+  { icon: BedDouble, label: "Comfortable AC Stay" },
+  { icon: Wifi, label: "Complimentary Wi-Fi" },
+  { icon: Clock, label: "24-Hour Check-In" },
+  { icon: Car, label: "Free Car Parking" },
+];
+
+const BOOKING_BENEFITS = [
+  {
+    icon: BadgeCheck,
+    title: "Best Price Guarantee",
+    description: "Direct booking rates with transparent pricing and no hidden fees.",
+  },
+  {
+    icon: CalendarCheck,
+    title: "Flexible Booking",
+    description: "Simple reservation adjustments for stress-free travel planning.",
+  },
+  {
+    icon: Headphones,
+    title: "24/7 Customer Support",
+    description: "Round-the-clock front desk assistance whenever you need us.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Safe & Secure Stay",
+    description: "Secure corridors, CCTV monitoring, and verified hospitality.",
+  },
+];
 
 const AMENITIES = [
+  { icon: Snowflake, label: "Comfortable AC Accommodation" },
+  { icon: BedDouble, label: "Classic Non-AC Stay" },
+  { icon: BellRing, label: "Family-Friendly Accommodation" },
+  { icon: Wifi, label: "Complimentary Wi-Fi" },
+  { icon: Car, label: "Free Car Parking" },
+  { icon: Clock, label: "24-Hour Hotel Services" },
+];
+
+const WHY_CHOOSE_POINTS = [
   {
-    icon: Utensils,
-    title: "Fine Dining",
-    text: "Royal Indian & global cuisine",
-    more: "Chef's tasting menus, live tandoor counter and 24-hour in-room dining.",
-    hours: "7:00 AM – 11:00 PM",
+    title: "Comfortable Accommodation",
+    description: "Well-appointed AC and Non-AC rooms with fresh linens and private baths.",
   },
   {
-    icon: Waves,
-    title: "Rooftop Pool",
-    text: "Sunset infinity views",
-    more: "Heated infinity pool with luxury cabanas, mocktails, and lantern-lit evenings.",
-    hours: "6:00 AM – 9:00 PM",
+    title: "Excellent Hospitality",
+    description: "Attentive staff dedicated to making every business or family stay effortless.",
   },
   {
-    icon: Sparkles,
-    title: "Spa & Wellness",
-    text: "Ayurvedic rituals",
-    more: "Traditional massages, aromatherapy steam room and couple's treatment suites.",
-    hours: "9:00 AM – 9:00 PM",
+    title: "Convenient Location",
+    description: "Easy access to Hoshangabad Road, transit hubs, and Bhopal city landmarks.",
   },
   {
-    icon: Wifi,
-    title: "High-speed Wi‑Fi",
-    text: "Across the property",
-    more: "Seamless fibre Wi‑Fi in every room, terrace lounge and poolside.",
-    hours: "24 Hours Complimentary",
-  },
-  {
-    icon: Car,
-    title: "Valet & Transfers",
-    text: "Airport & railway pickup",
-    more: "Chauffeured luxury cars, secure private parking, and round-the-clock valet.",
-    hours: "Available on request",
-  },
-  {
-    icon: Dumbbell,
-    title: "Fitness Studio",
-    text: "Modern cardio & strength",
-    more: "Premium equipment, yoga mats, and personal workout guidance.",
-    hours: "Open 24 Hours",
+    title: "Easy Booking Experience",
+    description: "Instant online room selection with clear tariffs and zero hidden charges.",
   },
 ];
 
-const STORIES = [
-  {
-    image: IMG.dining,
-    eyebrow: "Dining",
-    title: "The Royal Table",
-    text: "Candlelit dinners, slow-cooked Awadhi heritage recipes, and artisanal breads served in our chandelier-lit dining hall.",
-    points: [
-      "Heritage thalis & Chef's tasting menus",
-      "Live tandoor and artisanal dessert counter",
-      "Private dining suites for celebratory banquets",
-    ],
-    note: "Special seasonal preparations available on advance reservation.",
-  },
-  {
-    image: IMG.pool,
-    eyebrow: "Leisure",
-    title: "Sunset Rooftop",
-    text: "Unwind beside our heated infinity pool with private cabanas, lanterns, and uninterrupted skyline views at golden hour.",
-    points: [
-      "Heated infinity pool with luxury cabanas",
-      "Poolside beverages and artisan small plates",
-      "Starlit evening lounge atmosphere",
-    ],
-    note: "Towels, robes and poolside service provided.",
-  },
+const GALLERY_ITEMS = [
+  { src: IMG.exterior, title: "Hotel Exterior", tag: "Hotel Exterior" },
+  { src: IMG.room101, title: "Guest Rooms", tag: "Guest Rooms" },
+  { src: IMG.lobby, title: "Reception", tag: "Reception" },
+  { src: IMG.dining, title: "Restaurant", tag: "Restaurant" },
+  { src: IMG.lounge, title: "Hotel Interiors", tag: "Hotel Interiors" },
 ];
-
-const MARQUEE_ITEMS = [
-  "Royal Indian Tradition",
-  "Handcrafted Luxury Suites",
-  "The Royal Table Dining",
-  "Rooftop Infinity Pool",
-  "24/7 Royal Concierge",
-  "Near Bareilly Civil Lines",
-  "Unforgettable Memories",
-];
-
-function StoryCard({ story, index, onOpen }) {
-  const tilt = useTilt(8);
-  return (
-    <Reveal
-      delay={index * 0.15}
-      variant={index === 0 ? "left" : "right"}
-      className="perspective-[1200px]"
-    >
-      <motion.button
-        type="button"
-        onClick={onOpen}
-        aria-label={`Open ${story.title}`}
-        {...tilt}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.97, rotateX: 8 }}
-        className="group relative block w-full overflow-hidden rounded-2xl text-left shadow-card transition-shadow duration-500 hover:shadow-lift border border-gold/25 cursor-pointer"
-      >
-        <div className="sheen aspect-[4/3] w-full overflow-hidden">
-          <img
-            src={story.image}
-            alt={story.title}
-            loading="lazy"
-            className="size-full object-cover transition-transform duration-[1.4s] group-hover:scale-110"
-          />
-        </div>
-        <div className="absolute inset-0 bg-hero-overlay" />
-        <div className="absolute inset-x-0 bottom-0 p-8 text-navy-foreground">
-          <p className="eyebrow text-champagne">{story.eyebrow}</p>
-          <h3 className="mt-2 font-display text-3xl font-semibold text-navy-foreground md:text-4xl">
-            {story.title}
-          </h3>
-          <p className="mt-2 text-sm text-navy-foreground/80 line-clamp-2">{story.text}</p>
-          <span className="mt-4 inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-gold uppercase group-hover:translate-x-1 transition-transform">
-            Discover Story <ArrowRight className="size-3.5" />
-          </span>
-        </div>
-      </motion.button>
-    </Reveal>
-  );
-}
 
 export default function HomePage() {
   const state = useHotelState();
-  const ready = useIntroDone();
-  const [selectedStory, setSelectedStory] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
 
   return (
-    <SiteLayout>
-      {/* Hero Section with Parallax Ambiance */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-navy">
-        {/* Background photo */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={IMG.exterior}
-            alt="Hotel Meri Exterior"
-            className="size-full object-cover scale-105"
-          />
-          <div className="absolute inset-0 bg-hero-overlay" />
-        </div>
-
-        {/* Dynamic lights & sparks */}
-        <Aurora />
-        <GoldSparks count={24} />
-
-        {/* Hero Content */}
-        <div className="relative z-10 mx-auto max-w-5xl px-6 pt-36 pb-24 text-center">
-          <motion.p
-            initial={{ opacity: 0, letterSpacing: "0.1em" }}
-            animate={ready ? { opacity: 1, letterSpacing: "0.32em" } : {}}
-            transition={{ duration: 1 }}
-            className="eyebrow ornament mx-auto justify-center text-gold-gradient animate-shine"
-          >
-            Welcome to Bareilly's Crown Jewel
-          </motion.p>
-
-          <h1 className="mt-6 font-display text-5xl font-medium tracking-wide text-navy-foreground md:text-7xl lg:text-8xl">
-            {ready ? (
-              <SplitText text="Royal Comfort & Hospitality" delay={0.2} />
-            ) : (
-              "Royal Comfort & Hospitality"
-            )}
-          </h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-            animate={ready ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-            transition={{ duration: 0.9, delay: 0.5 }}
-            className="mt-6 mx-auto max-w-2xl text-base text-navy-foreground/85 md:text-xl font-light leading-relaxed"
-          >
-            Where regal Indian heritage meets modern elegance. Experience handcrafted suites,
-            candlelit dining, and warm, attentive service.
-          </motion.p>
-
-          {/* Quick Booking Bar */}
+    <MotionConfig reducedMotion="user">
+      <SiteLayout>
+        {/* Section 2: Hero */}
+        <section className="relative overflow-hidden bg-[#F8F6F1] pt-28 pb-24 sm:pt-32 sm:pb-28 lg:pt-36 lg:pb-32">
+          {/* Full-Bleed Hero Background Image (2nd uploaded image) */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={ready ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.7 }}
-            className="mt-12"
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="absolute inset-0 z-0"
           >
-            <BookingWidget />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Endless Gold Marquee Ribbon */}
-      <Marquee items={MARQUEE_ITEMS} />
-
-      {/* Featured Accommodations */}
-      <section className="py-28 bg-navy-deep px-6 relative">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-wrap items-end justify-between gap-6 mb-16">
-            <SectionTitle
-              eyebrow="Accommodations"
-              title="Rooms &amp; Suites"
-              subtitle="Five bespoke categories tailored for executive retreats, romantic weekenders, and royal family gatherings."
-              align="left"
-              tone="dark"
+            <img
+              src={IMG.heroSuite}
+              alt="Hotel Meri & Residency Luxury Suite"
+              className="h-full w-full object-cover object-center lg:object-[75%_center]"
             />
-            <Link
-              to="/rooms"
-              className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-champagne hover:bg-gold hover:text-gold-foreground transition"
-            >
-              View All Rooms <ArrowRight className="size-4" />
-            </Link>
-          </div>
+            {/* Smooth Warm-White (#F8F6F1) sweep on left for crisp text contrast, clear on right */}
+            <div className="absolute inset-0 bg-[#F8F6F1]/88 sm:bg-gradient-to-r sm:from-[#F8F6F1] sm:from-30% sm:via-[#F8F6F1]/92 sm:via-50% sm:to-transparent sm:to-75% lg:from-[#F8F6F1] lg:from-35% lg:via-[#F8F6F1]/90 lg:via-50% lg:to-transparent lg:to-70%" />
+          </motion.div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {state.categories.slice(0, 3).map((cat, i) => (
-              <RoomCard key={cat.id} category={cat} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive 3D Amenities with Flip Cards */}
-      <section className="py-28 bg-navy border-y border-gold/20 px-6 relative">
-        <div className="mx-auto max-w-7xl">
-          <SectionTitle
-            eyebrow="Curated Privileges"
-            title="Exceptional Amenities"
-            subtitle="Every detail crafted to elevate your comfort, from dawn to the golden twilight."
-            align="center"
-            tone="dark"
-          />
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {AMENITIES.map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <FlipCard
-                  key={item.title}
-                  delay={idx * 0.1}
-                  label={item.title}
-                  front={
-                    <div className="flex h-full flex-col justify-between rounded-2xl border border-gold/25 bg-navy-deep/80 p-8 shadow-card transition-shadow hover:shadow-lift">
-                      <div>
-                        <div className="inline-grid size-14 place-items-center rounded-2xl border border-gold/30 bg-gold/10 text-gold mb-6">
-                          <Icon className="size-7" />
-                        </div>
-                        <h3 className="font-display text-2xl font-semibold text-navy-foreground">
-                          {item.title}
-                        </h3>
-                        <p className="mt-2 text-sm text-navy-foreground/75 leading-relaxed">
-                          {item.text}
-                        </p>
-                      </div>
-
-                      <div className="mt-8 pt-4 border-t border-gold/15 flex items-center justify-between">
-                        <FlipHint text="Tap to view hours &amp; details" />
-                        <span className="text-xs text-gold">✦</span>
-                      </div>
-                    </div>
-                  }
-                  back={
-                    <div className="flex h-full flex-col justify-between rounded-2xl border border-gold/40 bg-navy p-8 shadow-lift">
-                      <div>
-                        <p className="eyebrow text-gold">{item.title}</p>
-                        <h4 className="mt-2 font-display text-2xl text-champagne">
-                          Privilege Details
-                        </h4>
-                        <p className="mt-4 text-sm text-navy-foreground/80 leading-relaxed">
-                          {item.more}
-                        </p>
-                        <div className="mt-5 rounded-lg bg-navy-deep/80 border border-gold/20 p-3">
-                          <p className="text-[11px] uppercase tracking-wider text-gold font-semibold">
-                            Availability
-                          </p>
-                          <p className="text-xs text-navy-foreground mt-0.5">{item.hours}</p>
-                        </div>
-                      </div>
-
-                      <div className="mt-6 pt-4 border-t border-gold/15 flex items-center justify-between">
-                        <span className="eyebrow !text-[0.6rem] text-champagne/70">
-                          Tap to flip back
-                        </span>
-                        <span className="text-xs text-gold">✦</span>
-                      </div>
-                    </div>
-                  }
-                />
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Stories Section with Interactive 3D Book Pop-up */}
-      <section className="py-28 bg-navy-deep px-6 relative">
-        <div className="mx-auto max-w-7xl">
-          <SectionTitle
-            eyebrow="Signature Experiences"
-            title="Stories of Hospitality"
-            subtitle="Take a closer glimpse into what awaits you at our tables and under the open sky."
-            align="center"
-            tone="dark"
-          />
-
-          <div className="mt-16 grid gap-8 md:grid-cols-2">
-            {STORIES.map((story, i) => (
-              <StoryCard
-                key={story.title}
-                story={story}
-                index={i}
-                onOpen={() => setSelectedStory(story)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* 3D Story Book Pop-up */}
-        <StoryBook3D
-          story={selectedStory}
-          onClose={() => setSelectedStory(null)}
-          action={
-            <Link
-              to="/book"
-              onClick={() => setSelectedStory(null)}
-              className="inline-block rounded-full bg-gold-gradient px-8 py-3 text-xs font-semibold tracking-wider text-gold-foreground uppercase shadow-gold hover:brightness-110 transition"
-            >
-              Plan Your Visit
-            </Link>
-          }
-        />
-      </section>
-
-      {/* Stats Counter Section */}
-      <section className="py-20 bg-navy border-y border-gold/20 px-6">
-        <div className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <Reveal variant="up" delay={0.1}>
-            <p className="font-display text-5xl md:text-6xl font-bold text-champagne">
-              <Counter to={52} suffix="+" />
-            </p>
-            <p className="eyebrow mt-3 text-gold">Luxury Rooms &amp; Suites</p>
-          </Reveal>
-
-          <Reveal variant="up" delay={0.2}>
-            <p className="font-display text-5xl md:text-6xl font-bold text-champagne">
-              <Counter to={18500} suffix="+" />
-            </p>
-            <p className="eyebrow mt-3 text-gold">Happy Guests Served</p>
-          </Reveal>
-
-          <Reveal variant="up" delay={0.3}>
-            <p className="font-display text-5xl md:text-6xl font-bold text-champagne">
-              <Counter to={24} suffix="/7" />
-            </p>
-            <p className="eyebrow mt-3 text-gold">Dedicated Concierge</p>
-          </Reveal>
-
-          <Reveal variant="up" delay={0.4}>
-            <p className="font-display text-5xl md:text-6xl font-bold text-champagne">
-              <Counter to={99} suffix="%" />
-            </p>
-            <p className="eyebrow mt-3 text-gold">Satisfaction Rating</p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* The Meri Legacy & Why Stay */}
-      <section className="py-28 bg-navy-deep px-6 relative">
-        <div className="mx-auto max-w-7xl grid gap-16 lg:grid-cols-2 items-center">
-          <Reveal variant="left">
-            <p className="eyebrow text-gold">The Meri Legacy</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold text-navy-foreground md:text-5xl leading-tight">
-              A Tradition of Warmth &amp; Regal Splendor
-            </h2>
-            <p className="mt-6 text-sm text-navy-foreground/75 leading-relaxed">
-              Situated in Bareilly’s prime hub near Civil Lines and the Railway Station, Hotel
-              Meri &amp; Residency blends timeless Indian hospitality with contemporary comforts.
-              Whether arriving for business, leisure, or grand weddings, our team anticipates every
-              desire with heartfelt devotion.
-            </p>
-
-            <div className="mt-8 grid grid-cols-2 gap-6">
-              <div className="flex items-start gap-3">
-                <div className="rounded-xl bg-gold/15 p-2.5 text-gold shrink-0 border border-gold/30">
-                  <Shield className="size-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-navy-foreground">
-                    24/7 Safety &amp; Care
-                  </h4>
-                  <p className="mt-1 text-xs text-navy-foreground/65">
-                    Key-card secure corridors, CCTV monitoring and round-the-clock attendants.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="rounded-xl bg-gold/15 p-2.5 text-gold shrink-0 border border-gold/30">
-                  <Award className="size-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-navy-foreground">
-                    Exquisite Gastronomy
-                  </h4>
-                  <p className="mt-1 text-xs text-navy-foreground/65">
-                    Authentic heritage culinary recipes prepared fresh with local organic spices.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <Link
-                to="/about"
-                className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-8 py-3.5 text-xs font-semibold uppercase tracking-wider text-champagne hover:bg-gold hover:text-gold-foreground transition shadow-card"
+          {/* Hero Foreground Content */}
+          <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="max-w-xl lg:max-w-2xl text-left">
+              {/* Welcome Pill Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: EASE }}
               >
-                Discover Our Heritage <ArrowRight className="size-4" />
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#D5A43D]/45 bg-white/95 px-4 py-1.5 text-xs font-semibold tracking-wide text-[#071A32] shadow-sm">
+                  <BedDouble className="size-3.5 text-[#D5A43D]" strokeWidth={2} />
+                  <span>Welcome to Hotel Meri &amp; Residency</span>
+                </span>
+              </motion.div>
+
+              {/* Main Heading */}
+              <motion.h1
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
+                className="mt-5 font-display text-4xl font-bold leading-[1.08] tracking-tight text-[#071A32] sm:text-5xl lg:text-[3.5rem]"
+              >
+                Experience Comfort, Elegance &amp; Exceptional Hospitality
+              </motion.h1>
+
+              {/* Short 2-line Description */}
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.16, ease: EASE }}
+                className="mt-4 max-w-lg text-base leading-relaxed text-slate-700 sm:text-lg line-clamp-2"
+              >
+                Thoughtfully appointed rooms, warm personal service, and modern amenities on Hoshangabad Road, Bhopal.
+              </motion.p>
+
+              {/* Primary & Secondary CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.24, ease: EASE }}
+                className="mt-7 flex flex-wrap items-center gap-3.5"
+              >
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    to="/rooms"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D5A43D] px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-[#071A32] shadow-sm hover:bg-[#e2b656] transition-colors"
+                  >
+                    <span>Book a Room</span>
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    to="/rooms"
+                    className="inline-flex items-center justify-center rounded-lg border border-[#071A32]/25 bg-white/85 px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#071A32] hover:border-[#071A32] hover:bg-white transition-colors"
+                  >
+                    Review Rooms
+                  </Link>
+                </motion.div>
+              </motion.div>
+
+              {/* Four Compact Highlights */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.32, ease: EASE }}
+                className="mt-8 grid grid-cols-2 gap-x-6 gap-y-3 pt-2 sm:flex sm:flex-wrap sm:items-center sm:gap-6"
+              >
+                {HERO_HIGHLIGHTS.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.label} className="flex items-center gap-2 text-xs font-semibold text-[#071A32]">
+                      <Icon className="size-4 text-[#D5A43D] shrink-0" strokeWidth={2} />
+                      <span>{item.label}</span>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Floating Booking Widget */}
+        <section className="relative z-20 -mt-12 sm:-mt-14 px-4 sm:px-6">
+          <BookingWidget />
+        </section>
+
+        {/* Section 4: Booking Benefits */}
+        <section className="bg-[#F8F6F1] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {BOOKING_BENEFITS.map((benefit, idx) => {
+                const Icon = benefit.icon;
+                return (
+                  <motion.div
+                    key={benefit.title}
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.45, delay: idx * 0.08, ease: EASE }}
+                    className="rounded-xl border border-[#071A32]/10 bg-white p-6 shadow-sm"
+                  >
+                    <Icon className="size-6 text-[#D5A43D]" strokeWidth={1.75} />
+                    <h3 className="mt-4 font-display text-xl font-semibold text-[#071A32]">
+                      {benefit.title}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+                      {benefit.description}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 5: Explore Rooms & Suites */}
+        <section className="border-t border-[#071A32]/10 bg-[#F8F6F1] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-10 sm:mb-12">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D5A43D]">
+                  Accommodations
+                </p>
+                <h2 className="mt-2 font-display text-3xl font-semibold text-[#071A32] sm:text-4xl">
+                  Explore Rooms &amp; Suites
+                </h2>
+                <p className="mt-2 max-w-xl text-sm text-slate-600">
+                  Four distinct room categories tailored for families, business travellers, and couples.
+                </p>
+              </div>
+              <Link
+                to="/rooms"
+                className="inline-flex items-center gap-2 rounded-lg border border-[#071A32]/20 bg-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#071A32] hover:border-[#D5A43D] hover:bg-[#071A32] hover:text-white transition-colors"
+              >
+                <span>View All Rooms</span>
+                <ArrowRight className="size-3.5" />
               </Link>
             </div>
-          </Reveal>
 
-          <Reveal variant="right" className="grid grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <div className="overflow-hidden rounded-2xl border border-gold/25 shadow-card sheen aspect-[4/5]">
-                <img
-                  src={IMG.lobby}
-                  alt="Hotel Meri Lobby"
-                  className="size-full object-cover hover:scale-105 transition duration-700"
-                />
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-gold/25 shadow-card sheen aspect-square">
-                <img
-                  src={IMG.lounge}
-                  alt="Hotel Lounge"
-                  className="size-full object-cover hover:scale-105 transition duration-700"
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {state.categories.slice(0, 4).map((cat, i) => (
+                <RoomCard key={cat.id} category={cat} index={i} demoMode />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 6: Amenities */}
+        <section className="bg-[#071A32] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="text-center max-w-xl mx-auto">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D5A43D]">
+                Facilities
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-semibold text-[#F8F6F1] sm:text-4xl">
+                Essential Hotel Amenities
+              </h2>
+              <p className="mt-2 text-sm text-[#F8F6F1]/75">
+                Every convenience designed for a comfortable, uninterrupted stay.
+              </p>
             </div>
 
-            <div className="space-y-4 pt-8">
-              <div className="overflow-hidden rounded-2xl border border-gold/25 shadow-card sheen aspect-square">
-                <img
-                  src={IMG.dining}
-                  alt="Fine Dining"
-                  className="size-full object-cover hover:scale-105 transition duration-700"
-                />
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-gold/25 shadow-card sheen aspect-[4/5]">
-                <img
-                  src={IMG.pool}
-                  alt="Rooftop Pool"
-                  className="size-full object-cover hover:scale-105 transition duration-700"
-                />
-              </div>
+            <div className="mt-10 flex gap-4 overflow-x-auto pb-2 snap-x no-scrollbar sm:grid sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible sm:pb-0">
+              {AMENITIES.map((amenity, idx) => {
+                const Icon = amenity.icon;
+                return (
+                  <motion.div
+                    key={amenity.label}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.45, delay: idx * 0.06, ease: EASE }}
+                    className="group min-w-[140px] snap-start flex flex-col items-center justify-center rounded-xl border border-white/10 bg-[#0B2242]/70 p-5 text-center transition-colors hover:border-[#D5A43D]/60"
+                  >
+                    <div className="grid size-11 place-items-center rounded-lg border border-[#D5A43D]/30 bg-[#071A32] text-[#D5A43D] transition-transform duration-300 group-hover:scale-110">
+                      <Icon className="size-5" strokeWidth={1.75} />
+                    </div>
+                    <span className="mt-3 text-xs font-semibold tracking-wide text-[#F8F6F1]">
+                      {amenity.label}
+                    </span>
+                  </motion.div>
+                );
+              })}
             </div>
-          </Reveal>
-        </div>
-      </section>
-    </SiteLayout>
+          </div>
+        </section>
+
+        {/* Section 7: Why Choose Hotel Meri? */}
+        <section className="bg-[#F8F6F1] py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
+              {/* Left Column */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, ease: EASE }}
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D5A43D]">
+                  Our Promise
+                </p>
+                <h2 className="mt-2 font-display text-3xl font-semibold text-[#071A32] sm:text-4xl">
+                  Why Choose Hotel Meri?
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                  Located at No-30, Narmadapuram Rd (Hoshangabad Road), Misrod, Bhopal, Hotel Meri &amp; Residency operates 24 hours and pairs warm Indian hospitality with dependable modern comfort.
+                </p>
+
+                <div className="mt-8 space-y-5">
+                  {WHY_CHOOSE_POINTS.map((point) => (
+                    <div key={point.title} className="flex items-start gap-3.5">
+                      <div className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[#D5A43D]/15 text-[#b58726]">
+                        <Check className="size-3.5" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <h3 className="font-display text-lg font-semibold text-[#071A32]">
+                          {point.title}
+                        </h3>
+                        <p className="mt-0.5 text-sm text-slate-600">
+                          {point.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Right Column: Large Sharp Exterior Image */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.55, ease: EASE }}
+              >
+                <div className="overflow-hidden rounded-xl border border-[#071A32]/10 bg-white shadow-sm aspect-[4/3]">
+                  <img
+                    src={IMG.exterior}
+                    alt="Hotel Meri & Residency Exterior"
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 8: Hotel Gallery */}
+        <section className="border-t border-[#071A32]/10 bg-white py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D5A43D]">
+                  Visual Tour
+                </p>
+                <h2 className="mt-2 font-display text-3xl font-semibold text-[#071A32] sm:text-4xl">
+                  Hotel Gallery
+                </h2>
+                <p className="mt-2 text-sm text-slate-600">
+                  Explore our exterior, guest rooms, reception, and dining spaces.
+                </p>
+              </div>
+              <Link
+                to="/gallery"
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#071A32] hover:text-[#D5A43D] transition-colors"
+              >
+                <span>Full Gallery</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+              {GALLERY_ITEMS.map((item, idx) => (
+                <motion.button
+                  key={item.title}
+                  type="button"
+                  onClick={() => setLightboxIndex(idx)}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.45, delay: idx * 0.06, ease: EASE }}
+                  className="group relative overflow-hidden rounded-xl border border-[#071A32]/10 bg-[#071A32]/5 text-left cursor-pointer"
+                  aria-label={`View ${item.title} in lightbox`}
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#071A32]/85 via-[#071A32]/40 to-transparent p-3.5">
+                    <p className="text-xs font-semibold tracking-wide text-[#F8F6F1]">
+                      {item.title}
+                    </p>
+                  </div>
+                  <div className="absolute top-2.5 right-2.5 grid size-7 place-items-center rounded-full bg-[#071A32]/75 text-[#F8F6F1] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <Expand className="size-3.5" />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          <Lightbox3D
+            photos={GALLERY_ITEMS}
+            index={lightboxIndex}
+            onClose={() => setLightboxIndex(-1)}
+            onIndexChange={setLightboxIndex}
+          />
+        </section>
+
+        {/* Section 9: Guest Reviews */}
+        <section className="border-t border-[#071A32]/10 bg-[#F8F6F1] py-16 sm:py-20">
+          <div className="mx-auto max-w-4xl px-5 sm:px-8">
+            <div className="text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D5A43D]">
+                4.8 ★ Rating · 83 Google Reviews
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-semibold text-[#071A32] sm:text-4xl">
+                Guest Reviews
+              </h2>
+            </div>
+
+            <div className="mt-10 rounded-xl border border-[#071A32]/10 bg-white p-8 text-center shadow-sm">
+              <div className="flex items-center justify-center gap-1" aria-label="4.8 out of 5 stars">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="size-4 fill-[#D5A43D] text-[#D5A43D]" />
+                ))}
+              </div>
+              <p className="mt-4 font-display text-xl text-[#071A32]">
+                Verified guest reviews will appear here as completed stays are recorded.
+              </p>
+              <p className="mt-2 text-xs text-slate-500">
+                Hotel Meri &amp; Residency · No-30, Narmadapuram Rd (Hoshangabad Road), Misrod, Bhopal
+              </p>
+            </div>
+          </div>
+        </section>
+      </SiteLayout>
+    </MotionConfig>
   );
 }

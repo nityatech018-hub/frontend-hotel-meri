@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
+  Calendar,
   AlertTriangle,
   LogIn,
   LogOut,
@@ -46,6 +47,42 @@ export function NotificationBell() {
 
   // Compute live notifications
   const alerts = [];
+
+  // 0. New Bookings Received Today (Highest Front Desk Visibility)
+  const todayBookings = (state.bookings || []).filter(
+    (b) => b.bookingDate === today || (b.createdAt && b.createdAt.startsWith(today))
+  );
+
+  todayBookings.forEach((b) => {
+    alerts.push({
+      id: `new-booking-${b.id}`,
+      type: "new_booking",
+      icon: Calendar,
+      title: `New Reservation: ${b.guestName} (#${b.id})`,
+      message: `${b.rooms || 1}x room (${b.categoryId?.toUpperCase() || "SUITE"}) · Stay: ${formatDate(b.checkIn)} to ${formatDate(b.checkOut)} · Booked at ${b.bookingTime || "Today"}`,
+      link: `/reception/bookings?search=${b.id}`,
+      actionText: "Review Booking",
+      badge: "New Booking",
+      time: b.bookingTime || "Today",
+    });
+  });
+
+  // Explicit system notifications
+  (state.notifications || []).forEach((n) => {
+    if (!alerts.some((a) => a.id === n.id || a.id === `new-booking-${n.bookingId}`)) {
+      alerts.push({
+        id: n.id,
+        type: n.type || "info",
+        icon: Calendar,
+        title: n.title,
+        message: n.message,
+        link: n.link || "/reception/bookings",
+        actionText: "View",
+        badge: "Alert",
+        time: n.time || "Recent",
+      });
+    }
+  });
 
   // 1. Overdue Departures (High Priority)
   const overdue = state.bookings.filter(
@@ -150,6 +187,7 @@ export function NotificationBell() {
 
   const activeAlerts = alerts.filter((a) => !dismissed.includes(a.id));
   const hasUrgent = activeAlerts.some((a) => a.type === "urgent");
+  const hasNewBooking = activeAlerts.some((a) => a.type === "new_booking");
 
   const handleDismiss = (id, e) => {
     e?.stopPropagation();
@@ -180,7 +218,9 @@ export function NotificationBell() {
         {activeAlerts.length > 0 && (
           <span
             className={`absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-md ${
-              hasUrgent
+              hasNewBooking
+                ? "bg-emerald-500 animate-pulse ring-2 ring-emerald-400/50"
+                : hasUrgent
                 ? "bg-rose-500 animate-pulse ring-2 ring-rose-400/40"
                 : "bg-gold text-gold-foreground font-black"
             }`}
@@ -237,7 +277,9 @@ export function NotificationBell() {
                       if (a.link) navigate(a.link);
                     }}
                     className={`group relative rounded-xl border p-3 transition cursor-pointer ${
-                      a.type === "urgent"
+                      a.type === "new_booking"
+                        ? "border-emerald-500/50 bg-emerald-950/40 hover:border-emerald-400 hover:bg-emerald-950/60"
+                        : a.type === "urgent"
                         ? "border-rose-500/40 bg-rose-950/20 hover:bg-rose-950/30"
                         : "border-gold/15 bg-navy-deep/60 hover:border-gold/40 hover:bg-navy-deep"
                     }`}
@@ -246,7 +288,9 @@ export function NotificationBell() {
                       <div className="flex items-center gap-2">
                         <span
                           className={`grid size-6 place-items-center rounded-lg ${
-                            a.type === "urgent"
+                            a.type === "new_booking"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : a.type === "urgent"
                               ? "bg-rose-500/20 text-rose-400"
                               : "bg-gold/20 text-gold"
                           }`}
@@ -272,7 +316,11 @@ export function NotificationBell() {
                     </p>
 
                     <div className="mt-2.5 flex items-center justify-between text-[10px]">
-                      <span className="rounded bg-navy px-1.5 py-0.5 text-gold border border-gold/20 font-mono uppercase">
+                      <span className={`rounded px-1.5 py-0.5 border font-mono uppercase ${
+                        a.type === "new_booking"
+                          ? "bg-emerald-900/60 text-emerald-300 border-emerald-500/40 font-bold"
+                          : "bg-navy text-gold border-gold/20"
+                      }`}>
                         {a.badge}
                       </span>
                       <span className="flex items-center gap-1 font-semibold text-gold group-hover:translate-x-0.5 transition-transform">

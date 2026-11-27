@@ -11,10 +11,10 @@ export default function NotFoundPage() {
           <Compass className="size-16 text-gold animate-pulse" />
         </div>
         <p className="mt-6 text-xs uppercase tracking-widest text-gold font-semibold">404 Error</p>
-        <h1 className="mt-2 font-display text-4xl sm:text-5xl font-bold text-navy-foreground">
+        <h1 className="mt-2 font-display text-4xl sm:text-5xl font-bold text-[#061830]">
           Page Not Found
         </h1>
-        <p className="mt-3 max-w-md text-sm text-navy-foreground/70 leading-relaxed">
+        <p className="mt-3 max-w-md text-sm text-[#475569] leading-relaxed font-medium">
           The sanctuary you are looking for does not exist or may have been relocated.
         </p>
         <Link

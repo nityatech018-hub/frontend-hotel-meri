@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, UserRound } from "lucide-react";
+import { Menu, X, UserRound, ShieldCheck } from "lucide-react";
 import { useHotel } from "@/lib/hotel/store.jsx";
 import { cn } from "@/lib/utils.js";
 import { Logo } from "./Logo.jsx";
@@ -42,14 +42,29 @@ export function SiteNav() {
     }
   }, [open]);
 
-  const accountLink = session?.role === "reception" ? (
-    <Link
-      to="/reception"
-      className="flex items-center justify-center gap-2 rounded-full border border-gold/40 px-4 py-2 text-xs tracking-wider text-champagne uppercase hover:bg-gold hover:text-gold-foreground transition"
-    >
-      <UserRound className="size-4" />
-      Reception Desk
-    </Link>
+  // Subtle navy background transition on scroll
+  const isSolid = scrolled || open;
+
+  const accountLink = session?.role === "admin" ? (
+    <div className="flex items-center gap-2">
+      <Link
+        to="/admin"
+        className="flex items-center justify-center gap-1.5 rounded-full bg-gold/20 border border-gold px-4 py-2 text-xs font-bold tracking-wider text-champagne uppercase hover:bg-gold hover:text-gold-foreground transition shadow-sm"
+      >
+        <ShieldCheck className="size-4 text-gold" />
+        Admin Console
+      </Link>
+    </div>
+  ) : session?.role === "reception" ? (
+    <div className="flex items-center gap-2">
+      <Link
+        to="/reception"
+        className="flex items-center justify-center gap-2 rounded-full border border-gold/40 px-4 py-2 text-xs tracking-wider text-champagne uppercase hover:bg-gold hover:text-gold-foreground transition"
+      >
+        <UserRound className="size-4" />
+        Reception Desk
+      </Link>
+    </div>
   ) : session ? (
     <Link
       to="/account"
@@ -59,22 +74,24 @@ export function SiteNav() {
       {session.name.split(" ")[0]}
     </Link>
   ) : (
-    <Link
-      to="/login"
-      className="flex items-center justify-center gap-2 rounded-full border border-gold/40 px-4 py-2 text-xs tracking-wider text-champagne uppercase hover:bg-gold hover:text-gold-foreground transition"
-    >
-      <UserRound className="size-4" />
-      Sign In
-    </Link>
+    <div className="flex items-center gap-3">
+      <Link
+        to="/login"
+        className="flex items-center gap-1.5 text-xs font-semibold tracking-[0.18em] uppercase text-white/90 hover:text-champagne transition"
+      >
+        <UserRound className="size-4 text-white/90" />
+        <span>Login</span>
+      </Link>
+    </div>
   );
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled || open
-          ? "bg-[#061830] border-b border-gold/25 shadow-lift py-3"
-          : "bg-transparent py-5"
+        isSolid
+          ? "bg-[#071A32] border-b border-[#D5A43D]/30 shadow-sm py-3"
+          : "bg-[#071A32]/90 border-b border-[#D5A43D]/15 py-4"
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 lg:px-8">
@@ -112,8 +129,8 @@ export function SiteNav() {
         <div className="hidden items-center gap-4 md:flex">
           {accountLink}
           <Link
-            to="/book"
-            className="rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-semibold tracking-wider text-gold-foreground uppercase shadow-gold hover:brightness-110 transition"
+            to="/rooms"
+            className="rounded-lg bg-[#D5A43D] px-5 py-2.5 text-xs font-semibold tracking-wider text-[#071A32] uppercase hover:bg-[#e2b656] active:scale-[0.98] transition"
           >
             Book Now
           </Link>
@@ -182,9 +199,9 @@ export function SiteNav() {
                     {accountLink}
                   </div>
                   <Link
-                    to="/book"
+                    to="/rooms"
                     onClick={() => setOpen(false)}
-                    className="w-full text-center rounded-full bg-gold-gradient py-3 text-xs font-semibold tracking-wider text-gold-foreground uppercase shadow-gold hover:brightness-110 transition"
+                    className="w-full text-center rounded-lg bg-[#D5A43D] py-3 text-xs font-semibold tracking-wider text-[#071A32] uppercase hover:bg-[#e2b656] transition"
                   >
                     Book Now
                   </Link>

@@ -129,7 +129,7 @@ export function SectionTitle({
       {subtitle && (
         <motion.p
           className={`mt-4 text-base leading-relaxed ${
-            tone === "dark" ? "text-navy-foreground/75" : "text-navy-foreground/70"
+            tone === "dark" ? "text-navy-foreground/75" : "text-[#475569]"
           }`}
           initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}

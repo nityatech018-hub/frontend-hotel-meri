@@ -394,6 +394,27 @@
   animation: floor-glide 2.4s linear infinite;
 }
 
+/* Hide scrollbars across all browsers while preserving scrollability */
+.no-scrollbar::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+aside *::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+nav *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  -webkit-appearance: none !important;
+}
+.no-scrollbar,
+aside,
+aside *,
+nav,
+nav * {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox and Chrome 121+ */
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -402,3 +423,22 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Optimized Print Styles for Tax Invoice */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 4mm;
+  }
+  html, body {
+    background: white !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+

@@ -47,32 +47,32 @@ export default function AccountSupport() {
       >
         <form onSubmit={submit} className="space-y-4 text-xs">
           <div className="space-y-1.5">
-            <label className="text-gold font-medium uppercase tracking-wide">Subject</label>
+            <label className="text-[#061830] font-semibold uppercase tracking-wide">Subject</label>
             <input
               required
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Airport transfer, early check-in, extra pillows"
-              className="w-full rounded-xl border border-gold/30 bg-navy-deep px-4 py-2.5 text-sm text-navy-foreground focus:border-gold focus:outline-none"
+              className="w-full rounded-xl border border-gold/30 bg-[#FAF7F2] px-4 py-2.5 text-sm text-[#061830] focus:border-gold focus:outline-none"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-gold font-medium uppercase tracking-wide">Message</label>
+            <label className="text-[#061830] font-semibold uppercase tracking-wide">Message</label>
             <textarea
               required
               rows={5}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Please describe how our team can help make your stay exceptional..."
-              className="w-full rounded-xl border border-gold/30 bg-navy-deep px-4 py-2.5 text-sm text-navy-foreground focus:border-gold focus:outline-none"
+              className="w-full rounded-xl border border-gold/30 bg-[#FAF7F2] px-4 py-2.5 text-sm text-[#061830] focus:border-gold focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={busy}
-            className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-7 py-3 text-xs font-semibold uppercase tracking-wider text-gold-foreground shadow-gold disabled:opacity-50 hover:brightness-110 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-gold-gradient px-7 py-3 text-xs font-bold uppercase tracking-wider text-gold-foreground shadow-gold disabled:opacity-50 hover:brightness-110 transition cursor-pointer"
           >
             {busy ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
             {busy ? "Sending…" : "Send Message"}
@@ -80,7 +80,7 @@ export default function AccountSupport() {
         </form>
 
         <div className="mt-8 border-t border-gold/15 pt-6">
-          <p className="text-xs font-semibold tracking-widest text-gold uppercase">Your Message History</p>
+          <p className="text-xs font-bold tracking-widest text-gold uppercase">Your Message History</p>
           {msgs.length === 0 ? (
             <EmptyState
               icon={Inbox}
@@ -96,14 +96,14 @@ export default function AccountSupport() {
                     layout
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="rounded-xl border border-gold/15 bg-navy-deep/60 p-4"
+                    className="rounded-xl border border-gold/20 bg-[#FAF7F2] p-4 text-[#061830]"
                   >
                     <div className="flex justify-between items-center gap-3">
-                      <p className="font-semibold text-sm text-navy-foreground">{m.subject}</p>
-                      <span className="text-[11px] text-navy-foreground/50">{formatDate(m.createdAt)}</span>
+                      <p className="font-bold text-sm text-[#061830]">{m.subject}</p>
+                      <span className="text-[11px] text-[#64748b]">{formatDate(m.createdAt)}</span>
                     </div>
-                    <p className="mt-2 text-xs text-navy-foreground/75 leading-relaxed">{m.message}</p>
-                    <p className="mt-2 text-[11px] font-medium text-emerald-400">✓ Delivered to Reception Desk</p>
+                    <p className="mt-2 text-xs text-[#475569] leading-relaxed">{m.message}</p>
+                    <p className="mt-2 text-[11px] font-semibold text-emerald-700">✓ Delivered to Reception Desk</p>
                   </motion.li>
                 ))}
               </AnimatePresence>
@@ -118,20 +118,20 @@ export default function AccountSupport() {
             {
               icon: Phone,
               label: "Front Desk Hotline",
-              value: settings?.phone || "+91 94294 88388",
+              value: settings?.phone || "+91 94122 56789",
               href: `tel:${(settings?.phone || "").replace(/\s/g, "")}`,
             },
             {
               icon: Mail,
               label: "Guest Email",
-              value: settings?.email || "hotelmeri@gmail.com",
-              href: `mailto:${settings?.email || "hotelmeri@gmail.com"}`,
+              value: settings?.email || "reservations@hotelmeri.com",
+              href: `mailto:${settings?.email || "reservations@hotelmeri.com"}`,
             },
             {
               icon: MessageCircle,
               label: "WhatsApp Concierge",
               value: "Chat on WhatsApp",
-              href: `https://wa.me/${settings?.whatsapp || "919429488388"}`,
+              href: `https://wa.me/${(settings?.whatsapp || "919412256789").replace(/[^0-9]/g, "")}`,
             },
           ].map((c) => (
             <a
@@ -139,16 +139,16 @@ export default function AccountSupport() {
               href={c.href}
               target={c.icon === MessageCircle ? "_blank" : undefined}
               rel="noreferrer"
-              className="flex items-center gap-3 rounded-xl border border-gold/15 bg-navy-deep/40 p-3.5 transition hover:border-gold hover:bg-white/5"
+              className="flex items-center gap-3 rounded-xl border border-gold/20 bg-[#FAF7F2] p-3.5 transition hover:border-gold hover:bg-gold/10"
             >
-              <span className="grid size-10 place-items-center rounded-full bg-navy text-gold">
+              <span className="grid size-10 place-items-center rounded-full bg-white border border-gold/30 text-gold shadow-sm">
                 <c.icon className="size-4" />
               </span>
               <div>
-                <span className="block text-[11px] uppercase tracking-wider text-navy-foreground/50">
+                <span className="block text-[11px] uppercase tracking-wider text-[#64748b] font-medium">
                   {c.label}
                 </span>
-                <span className="text-xs font-semibold text-navy-foreground">{c.value}</span>
+                <span className="text-xs font-bold text-[#061830]">{c.value}</span>
               </div>
             </a>
           ))}

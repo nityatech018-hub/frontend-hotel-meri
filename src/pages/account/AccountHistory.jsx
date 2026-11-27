@@ -47,19 +47,19 @@ export default function AccountHistory() {
                 animate={{ opacity: 1, y: 0 }}
                 className="relative"
               >
-                <span className="absolute top-5 -left-[1.35rem] size-2.5 rounded-full border-2 border-navy bg-gold" />
-                <div className="flex flex-wrap items-center gap-4 rounded-xl border border-gold/15 bg-navy-deep/50 p-4 transition hover:border-gold/50">
+                <span className="absolute top-5 -left-[1.35rem] size-2.5 rounded-full border-2 border-white bg-gold shadow-sm" />
+                <div className="flex flex-wrap items-center gap-4 rounded-xl border border-gold/25 bg-[#FAF7F2] p-4 transition hover:border-gold hover:bg-gold/10 text-[#061830]">
                   <img
                     src={cat?.image}
                     alt=""
-                    className="size-16 rounded-lg object-cover border border-gold/20"
+                    className="size-16 rounded-lg object-cover border border-gold/20 shrink-0"
                   />
                   <div className="min-w-40 flex-1">
-                    <p className="font-display text-lg font-semibold text-navy-foreground">
+                    <p className="font-display text-lg font-bold text-[#061830]">
                       {cat?.name || "Room"}
                     </p>
-                    <p className="text-xs text-navy-foreground/60">
-                      ID: {b.id} · {formatDate(b.checkIn)} → {formatDate(b.checkOut)} ·{" "}
+                    <p className="text-xs text-[#64748b] mt-0.5">
+                      ID: <strong className="text-[#061830]">{b.id}</strong> · {formatDate(b.checkIn)} → {formatDate(b.checkOut)} ·{" "}
                       {nightsBetween(b.checkIn, b.checkOut)} nights
                       {b.roomNumber ? ` · Room ${b.roomNumber}` : ""}
                     </p>
@@ -68,15 +68,22 @@ export default function AccountHistory() {
                     <StatusBadge status={b.status} />
                     <PaymentBadge payment={b.payment} />
                   </div>
-                  <p className="w-24 text-right font-display text-lg font-semibold text-navy-foreground">
+                  <p className="w-24 text-right font-display text-lg font-bold text-[#061830]">
                     {formatINR(b.total)}
                   </p>
-                  <Link
-                    to={`/invoice/${b.id}`}
-                    className="inline-flex items-center gap-1 text-xs text-gold hover:underline"
-                  >
-                    <FileText className="size-3.5" /> Invoice
-                  </Link>
+                  {b.status !== "Cancelled" && (
+                    <Link
+                      to={`/invoice/${b.id}`}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-gold hover:underline"
+                    >
+                      <FileText className="size-3.5" />{" "}
+                      {b.status === "Checked-Out"
+                        ? "Tax Invoice"
+                        : b.status === "Checked-In"
+                        ? "Interim Folio"
+                        : "Proforma"}
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             );

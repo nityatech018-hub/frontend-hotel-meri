@@ -8,10 +8,10 @@ import { useHotelState } from "@/lib/hotel/store.jsx";
 
 export function SiteLayout({ children }) {
   const state = useHotelState();
-  const whatsapp = state?.settings?.whatsapp || "919412288334";
+  const whatsapp = state?.settings?.whatsapp || "919039408329";
 
   return (
-    <div className="flex min-h-screen flex-col bg-navy-deep text-navy-foreground relative selection:bg-gold selection:text-gold-foreground">
+    <div className="flex min-h-screen flex-col bg-[#F8F6F1] text-[#071A32] relative selection:bg-[#D5A43D] selection:text-[#071A32]">
       {/* Golden reading scroll progress */}
       <ScrollProgress />
 

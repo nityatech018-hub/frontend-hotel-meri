@@ -69,6 +69,16 @@ export function SiteFooter() {
                 Book a Stay
               </Link>
             </li>
+            <li className="pt-2 border-t border-gold/15">
+              <Link to="/reception" className="hover:text-champagne transition text-xs font-semibold text-gold flex items-center gap-1.5">
+                • Reception Front Desk
+              </Link>
+            </li>
+            <li>
+              <Link to="/admin" className="hover:text-champagne transition text-xs font-semibold text-gold flex items-center gap-1.5">
+                • Executive Admin Portal
+              </Link>
+            </li>
           </ul>
         </div>
 
